@@ -7,7 +7,7 @@ This is the official PyTorch implementation of our paper "Real-time Holistic Rob
 
 The overall framework is presented below.
 
-<img src="asset/framework.jpg" width="800"/>
+<img src="asset/framework.png" width="800"/>
 
 ## Installation
 This project's dependencies include python 3.9, pytorch 1.13 and CUDA 11.7.
