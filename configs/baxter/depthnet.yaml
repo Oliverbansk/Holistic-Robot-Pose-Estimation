@@ -1,0 +1,88 @@
+
+# basic training
+no_cuda : False
+device_id : [0]
+
+# experiment name (also name of the saving directory)
+# model and log directory : {ROOT}/experiment/{exp_name}/
+exp_name : "baxter_depthnet" 
+
+# Data
+urdf_robot_name : "baxter"
+train_ds_names : "dream/synthetic/baxter_synth_train_dr"
+val_ds_names : None
+image_size : 256.0
+
+# Model
+backbone_name : "hrnet32"
+split_reg_head : False
+split_type : "2-first"
+use_rpmg: False
+
+# Optimizer
+lr : 1e-4
+weight_decay : 0.
+use_schedule : False
+schedule_type : "linear"
+n_epochs_warmup : 15
+start_decay : 100
+end_decay: 300
+final_decay : 0.01
+exponent : 0.96
+clip_gradient : 1.0
+
+# Training
+batch_size : 64
+epoch_size : 104975
+n_epochs : 700
+n_dataloader_workers : 6
+save_epoch_interval : None
+
+# Method
+use_direct_reg_branch : False
+n_iter : 4
+pose_loss_func : "smoothl1"
+rot_loss_func : "smoothl1"
+trans_loss_func : "smoothl1"
+kp3d_loss_func : "l2norm"
+kp2d_loss_func : "l2norm"
+rot_loss_weight : 1.0
+trans_loss_weight : 1.0
+use_2d_reprojection_loss : False
+use_3d_loss : True
+error2d_loss_weight : 1e-5
+error3d_loss_weight : 10.0
+joint_individual_weights : None
+
+use_integral_3d_branch : False
+use_limb_loss : False
+limb_loss_func : "l1"
+limb_loss_weight : 1.0
+use_uvd_3d_loss : True
+integral_3d_loss_func : "l2norm"
+integral_3d_loss_weight : 1.0
+use_xyz_3d_loss : False
+integral_xyz_3d_loss_func : "l2norm"
+integral_xyz_3d_loss_weight : 1.0
+bbox_3d_shape :
+  - 1300
+  - 1300
+  - 1300
+reference_keypoint_id : 0   # 0:base 
+
+use_pretrained_direct_reg_weights: False
+pretrained_direct_reg_weights_path: None
+
+# rootnet
+use_rootnet: True
+depth_loss_func : "l1"
+use_rootnet_xy_branch : False
+xy_loss_func : "mse"
+use_origin_bbox : False
+use_extended_bbox : True
+extend_ratio : [0.2, 0.13]
+use_rootnet_with_angle: False
+
+# Resume
+resume_run : False
+resume_experiment_name : ""

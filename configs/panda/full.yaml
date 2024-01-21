@@ -1,0 +1,97 @@
+
+# basic training
+no_cuda : False
+device_id : [0]
+
+# experiment name (also name of the saving directory)
+# model and log directory : {ROOT}/experiment/{exp_name}/
+exp_name : "panda_full" 
+
+# Data
+urdf_robot_name : "panda"
+train_ds_names : "dream/synthetic/panda_synth_train_dr"
+val_ds_names : None
+image_size : 256.0
+
+# Model
+backbone_name : "resnet50"
+rootnet_backbone_name : "hrnet32"
+rootnet_image_size : 256.0
+other_image_size : 256.0
+use_rpmg: False
+
+# Optimizer
+lr : 1e-4
+weight_decay : 0.
+use_schedule : True
+schedule_type : "exponential"
+n_epochs_warmup : 0
+start_decay : 45
+end_decay: 100
+final_decay : 0.01
+exponent : 0.95
+
+# Training
+batch_size : 64
+epoch_size : 104950
+n_epochs : 700
+n_dataloader_workers : 6
+save_epoch_interval : None
+
+# Method
+use_direct_reg_branch : True
+n_iter : 4
+pose_loss_func : "mse"
+rot_loss_func : "mse"
+trans_loss_func : "l2norm"
+depth_loss_func : "l1"
+uv_loss_func : "l2norm"
+kp2d_loss_func : "l2norm"
+kp3d_loss_func : "l2norm"
+kp2d_int_loss_func : "l2norm"
+kp3d_int_loss_func : "l2norm"
+align_3d_loss_func : "l2norm"
+pose_loss_weight : 1.0
+rot_loss_weight : 1.0
+trans_loss_weight : 1.0
+depth_loss_weight : 10.0
+uv_loss_weight : 1.0
+kp2d_loss_weight : 10.0
+kp3d_loss_weight : 10.0
+kp2d_int_loss_weight : 10.0
+kp3d_int_loss_weight : 10.0
+align_3d_loss_weight : 0.0
+joint_individual_weights : None
+use_joint_valid_mask : False
+fix_root : True
+bbox_3d_shape :
+  - 1300
+  - 1300
+  - 1300
+reference_keypoint_id : 3   # 0:base 
+fix_truncation : False
+
+use_pretrained_direct_reg_weights: False
+pretrained_direct_reg_weights_path: None
+
+use_pretrained_integral : False
+pretrained_integral_weights_path: None
+
+
+# rootnet (+ integral/regression)
+use_rootnet: True
+resample : False
+rootnet_depth_loss_weight : 1.0
+depth_loss_func : "l1"
+use_rootnet_xy_branch : False
+xy_loss_func : "mse"
+pretrained_rootnet: "models/panda_pretrained_depthnet.pk"
+use_origin_bbox : False
+use_extended_bbox : True
+
+use_rootnet_with_reg_int_shared_backbone : True
+use_rootnet_with_reg_with_int_separate_backbone : False
+
+# Resume
+resume_run : False
+resume_experiment_name : "resume_experiment_name"
