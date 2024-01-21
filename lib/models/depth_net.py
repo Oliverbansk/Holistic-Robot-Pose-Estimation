@@ -3,8 +3,8 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import torch
 import torch.nn as nn
-from models.backbones.HRnet import get_hrnet
-from models.backbones.Resnet import get_resnet
+from .backbones.HRnet import get_hrnet
+from .backbones.Resnet import get_resnet
 from torch.nn import functional as F
 
 

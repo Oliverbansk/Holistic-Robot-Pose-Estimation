@@ -7,11 +7,10 @@ import numpy as np
 import torch
 import torch.nn as nn
 from dataset.const import JOINT_BOUNDS, JOINT_NAMES
-from models.backbones.HRnet import get_hrnet
-from models.backbones.Resnet import get_resnet
-from utils.geometry import rot6d_to_rotmat, rotmat_to_quat, rotmat_to_rot6d
+from .backbones.HRnet import get_hrnet
+from .backbones.Resnet import get_resnet
+from utils.geometries import rot6d_to_rotmat, rotmat_to_quat, rotmat_to_rot6d
 from utils.integral import HeatmapIntegralJoint, HeatmapIntegralPose
-from utils.rpmg import simple_RPMG
 from utils.transforms import uvz2xyz_singlepoint
 from utils.urdf_robot import URDFRobot
 
@@ -133,8 +132,6 @@ class RootNetwithRegInt(nn.Module):
             self.drop1 = nn.Dropout(p=args.p_dropout)
             self.drop2 = nn.Dropout(p=args.p_dropout)
             nn.init.xavier_uniform_(self.decrot.weight, gain=0.01)
-        if self.use_rpmg:
-            self.rpmg_layer = simple_RPMG()
 
         if self.rootnet_backbone_name in ["resnet",  "resnet50",  "resnet34"]:
             self.rootnet_backbone = get_resnet(self.rootnet_backbone_name)

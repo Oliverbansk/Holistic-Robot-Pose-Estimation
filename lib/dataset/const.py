@@ -1,7 +1,6 @@
-from .augmentations import (
-    PillowBlur, PillowSharpness, PillowContrast, PillowBrightness, PillowColor, to_torch_uint8,
-    occlusion_aug, CropResizeToAspectAugmentation
-)
+from .augmentations import (CropResizeToAspectAugmentation, PillowBlur,
+                            PillowBrightness, PillowColor, PillowContrast,
+                            PillowSharpness, occlusion_aug, to_torch_uint8)
 
 rgb_augmentations=[
     PillowSharpness(p=0.3, factor_interval=(0., 50.)),

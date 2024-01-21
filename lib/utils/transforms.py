@@ -4,7 +4,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 import torch
 
-
 def hnormalized(vector):
     hnormalized_vector = (vector / vector[-1])[:-1]
     return hnormalized_vector

@@ -11,10 +11,9 @@ from config import (BAXTER_DESCRIPTION_PATH, KUKA_DESCRIPTION_PATH,
                     PANDA_DESCRIPTION_PATH, PANDA_DESCRIPTION_PATH_VISUAL)
 from dataset.const import JOINT_NAMES, LINK_NAMES
 from PIL import Image
-from utils.geometry import (quat_to_rotmat, rot6d_to_rotmat, rot9d_to_rotmat,
+from utils.geometries import (quat_to_rotmat, rot6d_to_rotmat, rot9d_to_rotmat,
                             rotmat_to_quat, rotmat_to_rot6d)
-from utils.mesh_renderer import RobotMeshRenderer
-from utils.robot_arm import PandaArm
+from utils.mesh_renderer import RobotMeshRenderer, PandaArm
 from utils.urdfpytorch import URDF
 
 if platform.system() == "Linux":

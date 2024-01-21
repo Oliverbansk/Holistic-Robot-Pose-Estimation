@@ -10,7 +10,7 @@ import torch
 import torch.nn.functional as F
 from dataset.roboutils import hnormalized, make_detections_from_segmentation
 from PIL import ImageEnhance, ImageFilter
-from utils.camera_geometry import get_K_crop_resize
+from utils.geometries import get_K_crop_resize
 
 
 def to_pil(im):

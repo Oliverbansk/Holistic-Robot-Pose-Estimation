@@ -611,7 +611,7 @@ def load_hrnet_cfg(file_name):
 
 
 def get_hrnet(type_name, num_joints, depth_dim, pretrain = True, **kwargs):
-    cfg = load_hrnet_cfg(f'./horopose/models/backbones/configs/hrnet_w{type_name}.yaml')
+    cfg = load_hrnet_cfg(f'./lib/models/backbones/configs/hrnet_w{type_name}.yaml')
     cfg['MODEL']['NUM_JOINTS'] = num_joints
     cfg['MODEL']['DEPTH_DIM'] = depth_dim
 

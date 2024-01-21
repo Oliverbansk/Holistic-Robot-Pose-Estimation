@@ -1,52 +1,35 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import random
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 import numpy as np
 import torch
-from horopose.dataset.const import JOINT_NAMES
-from horopose.dataset.dream import DreamDataset
-from horopose.dataset.multiepoch_dataloader import MultiEpochDataLoader
-from horopose.dataset.samplers import PartialSampler
-from horopose.models.depth_net import get_rootnet
-from horopose.utils.urdf_robot import URDFRobot
+from lib.dataset.const import JOINT_NAMES
+from lib.dataset.dream import DreamDataset
+from lib.dataset.multiepoch_dataloader import MultiEpochDataLoader
+from lib.dataset.samplers import PartialSampler
+from lib.models.depth_net import get_rootnet
+from lib.utils.urdf_robot import URDFRobot
+from lib.utils.utils import cast, set_random_seed, create_logger, get_scheduler
 from torch.utils.data import DataLoader, WeightedRandomSampler
-from torch.utils.tensorboard import SummaryWriter
 from torchnet.meter import AverageValueMeter
 from tqdm import tqdm
 
 
-def cast(obj, device, dtype=None):
-    if isinstance(obj, (dict, OrderedDict)):
-        for k, v in obj.items():
-            if v is None:
-                continue
-            obj[k] = cast(torch.as_tensor(v),device)
-            if dtype is not None:
-                obj[k] = obj[k].to(dtype)
-        return obj
-    
-    else:
-        return obj.to(device)
-    
-def set_random_seed(seed):
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-
-
 def train_depthnet(args):
     
+    torch.autograd.set_detect_anomaly(True)
     set_random_seed(808)
-
-    # GPU info 
+    
+    save_folder, ckpt_folder, log_folder, writer = create_logger(args)
+    
+    urdf_robot_name = args.urdf_robot_name
+    robot = URDFRobot(urdf_robot_name)
+ 
     device_id = args.device_id
     device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
     
-    # args info
-    urdf_robot_name = args.urdf_robot_name
+
     train_ds_names = args.train_ds_names
     test_ds_name_dr = train_ds_names.replace("train_dr","test_dr")
     if urdf_robot_name != "baxter":
@@ -57,17 +40,6 @@ def train_depthnet(args):
                             train_ds_names.replace("synthetic/panda_synth_train_dr","real/panda-3cam_realsense"),
                             train_ds_names.replace("synthetic/panda_synth_train_dr","real/panda-orb")]
         
-    # make URDF robot object 
-    robot = URDFRobot(urdf_robot_name)
-    
-    # tensorboard set ups
-    save_folder = os.path.join('experiments',  args.exp_name)
-    ckpt_folder = os.path.join(save_folder,  'ckpt')
-    log_folder = os.path.join(save_folder,  'log')
-    os.makedirs(ckpt_folder, exist_ok=True)
-    os.makedirs(log_folder, exist_ok=True)
-    writer = SummaryWriter(log_dir=log_folder)
-
     # make train and test(validation) datasets/dataloaders
     ds_train = DreamDataset(train_ds_names, 
                             # rootnet_resize_hw=(int(args.image_size),int(args.image_size)), 
@@ -96,24 +68,14 @@ def train_depthnet(args):
     ds_iter_train = MultiEpochDataLoader(ds_iter_train)
 
     test_loader_dict = {}
-    # test_sampler_dr = PartialSampler(ds_test_dr, epoch_size=None)
-    # ds_iter_test_dr = DataLoader(
-    #     ds_test_dr, sampler=test_sampler_dr, batch_size=args.batch_size, num_workers=args.n_dataloader_workers, drop_last=False, pin_memory=True
-    # )
     ds_iter_test_dr = DataLoader(
         ds_test_dr, batch_size=args.batch_size, num_workers=args.n_dataloader_workers
     )
-    # ds_iter_test_dr = MultiEpochDataLoader(ds_iter_test_dr)
     test_loader_dict["dr"] = ds_iter_test_dr
     if urdf_robot_name != "baxter":
-        # test_sampler_photo = PartialSampler(ds_test_photo, epoch_size=None)
-        # ds_iter_test_photo = DataLoader(
-        #     ds_test_photo, sampler=test_sampler_photo, batch_size=args.batch_size, num_workers=args.n_dataloader_workers, drop_last=False, pin_memory=True
-        # )
         ds_iter_test_photo = DataLoader(
             ds_test_photo, batch_size=args.batch_size, num_workers=args.n_dataloader_workers
         )
-        # ds_iter_test_photo = MultiEpochDataLoader(ds_iter_test_photo)
 
     if urdf_robot_name == "panda":
         ds_shorts = ["azure", "kinect", "realsense", "orb"]
@@ -123,14 +85,9 @@ def train_depthnet(args):
                                         color_jitter=False, rgb_augmentation=False, occlusion_augmentation=False, 
                                         flip = False,
                                         padding=args.padding, extend_ratio=args.extend_ratio) 
-            # test_sampler_real = PartialSampler(ds_test_real, epoch_size=None)
-            # ds_iter_test_real = DataLoader(
-            #     ds_test_real, sampler=test_sampler_real, batch_size=args.batch_size, num_workers=args.n_dataloader_workers, drop_last=False, pin_memory=True
-            # )
             ds_iter_test_real = DataLoader(
                 ds_test_real, batch_size=args.batch_size, num_workers=args.n_dataloader_workers
             )
-            # ds_iter_test_real = MultiEpochDataLoader(ds_iter_test_real)
             test_loader_dict[ds_short] = ds_iter_test_real
     
     print("len(ds_iter_train): ",len(ds_iter_train))
@@ -144,15 +101,7 @@ def train_depthnet(args):
                     pred_xy=args.use_rootnet_xy_branch,
                     add_fc=args.add_fc,
                     use_offset=args.use_offset)
-    # model = get_rootnet_new(args.backbone_name, 
-    #                         pred_xy=args.use_rootnet_xy_branch,
-    #                         use_offset=args.use_offset)
-    # model = get_rootnet_concat(args.backbone_name, 
-    #                     pred_xy=args.use_rootnet_xy_branch,
-    #                     use_offset=args.use_offset,
-    #                     robot_type=urdf_robot_name,
-    #                     root_id=args.reference_keypoint_id)
-    
+
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     
     curr_min_loss = 1e10
@@ -193,38 +142,9 @@ def train_depthnet(args):
         last_epoch = -1
     end_epoch = args.n_epochs
     
-    def lr_lambda(epoch):
-        if epoch < args.n_epochs_warmup:
-            ratio = float(epoch+1)/float(args.n_epochs_warmup)
-        elif epoch <= args.start_decay:
-            ratio = 1.0
-        elif epoch <= args.end_decay:
-            ratio = (float(args.end_decay - args.final_decay * args.start_decay) - (float(1-args.final_decay) * epoch)) / float(args.end_decay - args.start_decay)
-        else:
-            ratio = args.final_decay
-        return ratio
-    
-    def lr_lambda_exponential(epoch):
-        base_ratio = 1.0
-        ratio = base_ratio
-        if epoch < args.n_epochs_warmup:
-            ratio = float(epoch+1)/float(args.n_epochs_warmup)
-        elif epoch <= args.start_decay:
-            ratio = base_ratio
-        elif epoch <= args.end_decay:
-            ratio = (args.exponent)**(epoch-args.start_decay)
-        else:
-            ratio = (args.exponent)**(args.end_decay-args.start_decay)
-        return ratio
-    
-    if args.use_schedule:
-        if args.schedule_type == "linear":
-            lr_scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer=optimizer, lr_lambda=lr_lambda, last_epoch=last_epoch)
-        elif args.schedule_type == "exponential":
-            lr_scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer=optimizer, lr_lambda=lr_lambda_exponential, last_epoch=last_epoch)
+    lr_scheduler = get_scheduler(args, optimizer, last_epoch)
     
     
-    print("check what ds are u using!!! is it new or is it gt based. ")
     # for loop
     for epoch in range(start_epoch, end_epoch + 1):
         print('In epoch {} ----------------- (script: training rootnet)'.format(epoch + 1))

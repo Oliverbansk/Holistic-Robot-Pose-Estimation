@@ -5,7 +5,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 import sys 
 sys.path.append("..") 
-from utils.camera_geometry import get_K_crop_resize
+from utils.geometries import get_K_crop_resize
 import random
 
 def hnormalized(vector):

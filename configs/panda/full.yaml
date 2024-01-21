@@ -85,7 +85,7 @@ rootnet_depth_loss_weight : 1.0
 depth_loss_func : "l1"
 use_rootnet_xy_branch : False
 xy_loss_func : "mse"
-pretrained_rootnet: "models/panda_pretrained_depthnet.pk"
+pretrained_rootnet: "models/pretrained_depthnet/panda_pretrained_depthnet.pk"
 use_origin_bbox : False
 use_extended_bbox : True
 

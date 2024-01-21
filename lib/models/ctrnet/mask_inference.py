@@ -1,13 +1,13 @@
-import sys
 import os
+import sys
 base_dir = os.path.abspath(".")
 sys.path.append(base_dir)
+import argparse
+import numpy as np
 import torch
 import torchvision.transforms as transforms
-import numpy as np
 from PIL import Image as PILImage
 from .CtRNet import CtRNet
-import argparse
 
 
 class seg_mask_inference(torch.nn.Module):

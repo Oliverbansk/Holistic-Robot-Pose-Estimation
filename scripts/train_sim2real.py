@@ -1,83 +1,52 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import random
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 import cv2
 import numpy as np
 import torch
 from config import LOCAL_DATA_DIR
-from horopose.dataset.const import (INITIAL_JOINT_ANGLE, INTRINSICS_DICT,
+from lib.dataset.const import (INITIAL_JOINT_ANGLE, INTRINSICS_DICT,
                                     JOINT_NAMES, JOINT_TO_KP)
-from horopose.dataset.dream import DreamDataset
-from horopose.dataset.multiepoch_dataloader import MultiEpochDataLoader
-from horopose.dataset.samplers import PartialSampler
-from horopose.models.ctrnet.mask_inference import seg_mask_inference
-from horopose.models.full_net import get_rootNetwithRegInt_model
-from horopose.models.init_params import get_regression_init
-from horopose.utils.BPnP import BPnP_m3d
-from horopose.utils.transforms import point_projection_from_3d_tensor
-from horopose.utils.urdf_robot import URDFRobot
-from horopose.utils.vis import vis_3dkp_single_view
-from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
-from torchnet.meter import AverageValueMeter
-from tqdm import tqdm
-from utils.geometry import (angle_axis_to_rotation_matrix,
+from lib.dataset.dream import DreamDataset
+from lib.dataset.multiepoch_dataloader import MultiEpochDataLoader
+from lib.dataset.samplers import PartialSampler
+from lib.models.ctrnet.mask_inference import seg_mask_inference
+from lib.models.full_net import get_rootNetwithRegInt_model
+from lib.utils.BPnP import BPnP_m3d
+from lib.utils.transforms import point_projection_from_3d_tensor
+from lib.utils.urdf_robot import URDFRobot
+from lib.utils.vis import vis_3dkp_single_view
+from lib.utils.geometries import (angle_axis_to_rotation_matrix,
                             compute_geodesic_distance_from_two_matrices,
                             rot6d_to_rotmat, rotmat_to_rot6d)
-from utils.metrics import compute_metrics_batch, summary_add_pck
-
-
-def cast(obj, device, dtype=None):
-    if isinstance(obj, (dict, OrderedDict)):
-        for k, v in obj.items():
-            if v is None:
-                continue
-            obj[k] = cast(torch.as_tensor(v),device)
-            if dtype is not None:
-                obj[k] = obj[k].to(dtype)
-        return obj
-    
-    else:
-        return obj.to(device)
-    
-def set_random_seed(seed):
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
+from lib.utils.metrics import compute_metrics_batch, summary_add_pck
+from lib.utils.utils import cast, set_random_seed, create_logger, get_scheduler
+from torch.utils.data import DataLoader
+from torchnet.meter import AverageValueMeter
+from tqdm import tqdm
 
 
 def train_sim2real(args):
+    
     torch.autograd.set_detect_anomaly(True)
     set_random_seed(808)
+    
+    save_folder, ckpt_folder, log_folder, writer = create_logger(args)
+    
+    urdf_robot_name = args.urdf_robot_name
+    robot = URDFRobot(urdf_robot_name)
 
     # GPU info 
     device_id = args.device_id
     device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
     
-    urdf_robot_name = args.urdf_robot_name
-    train_ds_names = args.train_ds_names
     
+    train_ds_names = args.train_ds_names
     test_ds_name_real = [os.path.abspath(LOCAL_DATA_DIR / "dream/real/panda-3cam_azure"),
                          os.path.abspath(LOCAL_DATA_DIR / "dream/real/panda-3cam_kinect360"),
                          os.path.abspath(LOCAL_DATA_DIR / "dream/real/panda-3cam_realsense"),
                          os.path.abspath(LOCAL_DATA_DIR / "dream/real/panda-orb")]
-        
-    # make URDF robot object 
-    robot = URDFRobot(urdf_robot_name)
-    
-    # tensorboard set ups
-    save_folder = os.path.join('experiments',  args.exp_name)
-    ckpt_folder = os.path.join(save_folder,  'ckpt')
-    log_folder = os.path.join(save_folder,  'log')
-    vis_folder = os.path.join(save_folder,  'vis')
-    os.makedirs(ckpt_folder, exist_ok=True)
-    os.makedirs(log_folder, exist_ok=True)
-    os.makedirs(vis_folder, exist_ok=True)
-    writer = SummaryWriter(log_dir=log_folder)
-
     rootnet_hw = (int(args.rootnet_image_size),int(args.rootnet_image_size))
     other_hw = (int(args.other_image_size),int(args.other_image_size))
     ds_train = DreamDataset(train_ds_names, rootnet_resize_hw=rootnet_hw, other_resize_hw=other_hw, color_jitter=False, rgb_augmentation=False, occlusion_augmentation=False)
@@ -95,67 +64,31 @@ def train_sim2real(args):
             break
             
     for ds_name, ds_short in zip(test_ds_name_real, ds_shorts):
-        print(ds_name)
-        ds_test_real = DreamDataset(ds_name, rootnet_resize_hw=rootnet_hw, other_resize_hw=other_hw, color_jitter=False, rgb_augmentation=False, occlusion_augmentation=False, process_truncation=args.fix_truncation) 
-        # test_sampler_real = PartialSampler(ds_test_real, epoch_size=None)
-        # ds_iter_test_real = DataLoader(
-        #     ds_test_real, sampler=test_sampler_real, batch_size=args.batch_size, num_workers=args.n_dataloader_workers, drop_last=False, pin_memory=True
-        # )
+        ds_test_real = DreamDataset(ds_name, rootnet_resize_hw=rootnet_hw, other_resize_hw=other_hw, 
+                                    color_jitter=False, rgb_augmentation=False, occlusion_augmentation=False, 
+                                    process_truncation=args.fix_truncation) 
         ds_iter_test_real = DataLoader(
             ds_test_real, batch_size=args.batch_size, num_workers=args.n_dataloader_workers,
         )
-        # ds_iter_test_real = MultiEpochDataLoader(ds_iter_test_real)
         test_loader_dict[ds_short] = ds_iter_test_real
     
     print("len(ds_iter_train): ",len(ds_iter_train))
     for ds_short in ds_shorts:
         print(f"len(ds_iter_test_{ds_short}): ", len(test_loader_dict[ds_short]))
 
-    init_param_dict = get_regression_init(urdf_robot_name,True)
-    
+    init_param_dict = {
+        "robot_type" : urdf_robot_name,
+        "pose_params": INITIAL_JOINT_ANGLE,
+        "cam_params": np.eye(4,dtype=float),
+        "init_pose_from_mean": True
+    }
     if args.use_rootnet_with_reg_int_shared_backbone:
         print("regression and integral shared backbone, with rootnet 2 backbones in total")
         model = get_rootNetwithRegInt_model(init_param_dict, args)
                                      
     seg_net = seg_mask_inference(INTRINSICS_DICT[code_name], code_name)
     
-    if args.fine_tune_depth_layer:
-        print("only fine tune the depth layer")
-        for param in model.parameters():
-            param.requires_grad = False
-        for param in model.depth_layer.parameters():
-            param.requires_grad = True
-        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, weight_decay=args.weight_decay)
-    elif args.tune_rootnet:
-        print("only tune the rootnet")
-        for param in model.parameters():
-            param.requires_grad = False
-        for param in model.depth_layer.parameters():
-            param.requires_grad = True
-        for param in model.rootnet_backbone.parameters():
-            param.requires_grad = True
-        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, weight_decay=args.weight_decay)
-    elif args.fix_rootnet_sim2real:
-        print("freeze the rootnet")
-        for param in model.parameters():
-            param.requires_grad = True
-        for param in model.depth_layer.parameters():
-            param.requires_grad = False
-        for param in model.rootnet_backbone.parameters():
-            param.requires_grad = False
-        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr, weight_decay=args.weight_decay)
-    elif args.backbone_10percent :
-        print("backbone's lr is 1/10 of the overall lr")
-        params1 = list(map(id, model.reg_backbone.parameters()))
-        params2 = list(map(id, model.rootnet_backbone.parameters()))
-        base_params = filter(lambda p: id(p) not in params1 + params2, model.parameters())
-        optimizer = torch.optim.Adam([
-                    {'params': base_params},
-                    {'params': model.reg_backbone.parameters(), 'lr': args.lr * 0.1},
-                    {'params': model.rootnet_backbone.parameters(), 'lr': args.lr * 0.1}
-                    ], lr=args.lr, weight_decay=args.weight_decay)
-    else:
-        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     
     if args.pretrained_weight_on_synth is not None:
         print(f"using {args.pretrained_weight_on_synth} as starting point of self-training")
@@ -194,43 +127,8 @@ def train_sim2real(args):
         last_epoch = -1
     end_epoch = args.n_epochs
     
-    def lr_lambda_linear(epoch):
-        if epoch < args.n_epochs_warmup:
-            ratio = float(epoch+1)/float(args.n_epochs_warmup)
-        elif epoch <= args.start_decay:
-            ratio = 1.0
-        elif epoch <= args.end_decay:
-            ratio = (float(args.end_decay - args.final_decay * args.start_decay) - (float(1-args.final_decay) * epoch)) / float(args.end_decay - args.start_decay)
-        else:
-            ratio = args.final_decay
-        return ratio
+    lr_scheduler = get_scheduler(args, optimizer, last_epoch)
     
-    def lr_lambda_exponential(epoch):
-        base_ratio = 1.0
-        ratio = base_ratio
-        if epoch < args.n_epochs_warmup:
-            ratio = float(epoch+1)/float(args.n_epochs_warmup)
-        elif epoch <= args.start_decay:
-            ratio = base_ratio
-        elif epoch <= args.end_decay:
-            ratio = (args.exponent)**(epoch-args.start_decay)
-        else:
-            ratio = (args.exponent)**(args.end_decay-args.start_decay)
-        return ratio
-    
-    def lr_lambda_everyXepoch(epoch):
-        ratio = (args.step_decay)**(epoch // args.step)
-        if epoch >= args.end_decay:
-            ratio = (args.step_decay)**(args.end_decay // args.step)
-        return ratio
-    
-    if args.use_schedule:
-        if args.schedule_type == "linear":
-            lr_scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer=optimizer, lr_lambda=lr_lambda_linear, last_epoch=last_epoch)
-        elif args.schedule_type == "exponential":
-            lr_scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer=optimizer, lr_lambda=lr_lambda_exponential, last_epoch=last_epoch)
-        elif args.schedule_type == "everyXepoch":
-            lr_scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer=optimizer, lr_lambda=lr_lambda_everyXepoch, last_epoch=last_epoch)
     
     # for loop
     for epoch in range(start_epoch, end_epoch + 1):
@@ -518,6 +416,7 @@ def train_sim2real(args):
                     rendered_masks.append(rendered_mask)
                 if args.use_view:
                     if batchid < 2:
+                        vis_folder = os.path.join(save_folder,  'vis')
                         train_vispath = os.path.join(vis_folder, f"train")
                         os.makedirs(train_vispath, exist_ok=True)
                         ri = rendered_masks[0].reshape(240,320).detach().cpu().numpy() * 255

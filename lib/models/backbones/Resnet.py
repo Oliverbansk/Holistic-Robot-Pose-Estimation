@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
-# from torchvision.models.resnet import BasicBlock, Bottleneck
-# from torchvision.models.resnet import model_urls
+
 
 class ResNet(nn.Module):
 

@@ -14,7 +14,6 @@ class PartialSampler(Sampler):
         super().__init__(None)
 
     def __len__(self):
-        return 100
         return self.epoch_size
 
     def __iter__(self):

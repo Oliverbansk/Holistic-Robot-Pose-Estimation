@@ -1,11 +1,7 @@
+import numpy as np
 import torch
 from torch.nn import functional as F
-import numpy as np
 
-"""
-Useful geometric operations, e.g. Perspective projection and a differentiable Rodrigues formula
-Parts of the code are taken from https://github.com/MandyMo/pytorch_HMR
-"""
 def batch_rodrigues(theta):
     """Convert axis-angle representation to rotation matrix.
     Args:
@@ -359,3 +355,60 @@ def compute_euler_angles_from_rotation_matrices(rotation_matrices):
     out_euler[:,2]=z*(1-singular)+zs*singular
         
     return out_euler
+
+
+def get_K_crop_resize(K, boxes, orig_size, crop_resize):
+    """
+    Adapted from https://github.com/BerkeleyAutomation/perception/blob/master/perception/camera_intrinsics.py
+    Skew is not handled !
+    """
+    assert K.shape[1:] == (3, 3)
+    assert boxes.shape[1:] == (4, )
+    K = K.float()
+    boxes = boxes.float()
+    new_K = K.clone()
+
+    orig_size = torch.tensor(orig_size, dtype=torch.float)
+    crop_resize = torch.tensor(crop_resize, dtype=torch.float)
+
+    final_width, final_height = max(crop_resize), min(crop_resize)
+    crop_width = boxes[:, 2] - boxes[:, 0]
+    crop_height = boxes[:, 3] - boxes[:, 1]
+    crop_cj = (boxes[:, 0] + boxes[:, 2]) / 2
+    crop_ci = (boxes[:, 1] + boxes[:, 3]) / 2
+
+    # Crop
+    cx = K[:, 0, 2] + (crop_width - 1) / 2 - crop_cj
+    cy = K[:, 1, 2] + (crop_height - 1) / 2 - crop_ci
+
+    # # Resize (upsample)
+    center_x = (crop_width - 1) / 2
+    center_y = (crop_height - 1) / 2
+    orig_cx_diff = cx - center_x
+    orig_cy_diff = cy - center_y
+    scale_x = final_width / crop_width
+    scale_y = final_height / crop_height
+    scaled_center_x = (final_width - 1) / 2
+    scaled_center_y = (final_height - 1) / 2
+    fx = scale_x * K[:, 0, 0]
+    fy = scale_y * K[:, 1, 1]
+    cx = scaled_center_x + scale_x * orig_cx_diff
+    cy = scaled_center_y + scale_y * orig_cy_diff
+
+    new_K[:, 0, 0] = fx
+    new_K[:, 1, 1] = fy
+    new_K[:, 0, 2] = cx
+    new_K[:, 1, 2] = cy
+    return new_K
+
+
+def cropresize_backtransform_points2d(input_wh, boxes_2d_crop,
+                                      output_wh, points_2d_in_output):
+    bsz = input_wh.shape[0]
+    assert output_wh.shape == (bsz, 2)
+    assert input_wh.shape == (bsz, 2)
+    assert points_2d_in_output.dim() == 3
+
+    points_2d_normalized = points_2d_in_output / output_wh.unsqueeze(1)
+    points_2d = boxes_2d_crop[:, [0, 1]].unsqueeze(1) + points_2d_normalized * input_wh.unsqueeze(1)
+    return points_2d

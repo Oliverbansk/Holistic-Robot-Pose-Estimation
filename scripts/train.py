@@ -3,7 +3,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import argparse
 import yaml
-from horopose.config import LOCAL_DATA_DIR
+from lib.config import LOCAL_DATA_DIR
 from scripts.train_depthnet import train_depthnet
 from scripts.train_sim2real import train_sim2real
 from scripts.train_full import train_full
@@ -20,6 +20,7 @@ def make_cfg(args):
         cfg.no_cuda = config["no_cuda"]
         cfg.device_id = config["device_id"]
         cfg.exp_name = config["exp_name"]
+        cfg.config_path = args.config
         
         # Data
         cfg.urdf_robot_name = config["urdf_robot_name"]

@@ -11,8 +11,8 @@ import pandas as pd
 import torch
 from PIL import Image
 from tqdm import tqdm
-from horopose.utils.geometry import quat_to_rotmat_np
-from horopose.utils.transforms import invert_T
+from utils.geometries import quat_to_rotmat_np
+from utils.transforms import invert_T
 from dataset.augmentations import (CropResizeToAspectAugmentation, FlipAugmentation,
                             PillowBlur, PillowBrightness, PillowColor,
                             PillowContrast, PillowSharpness, occlusion_aug,
