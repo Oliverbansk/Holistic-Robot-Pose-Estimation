@@ -1,13 +1,13 @@
 # Real-time Holistic Robot Pose Estimation with Unknown States
 
-<img src="assets/teaser.png" width="800"/>
+<img src="asset/teaser.png" width="800"/>
 
 ## Introduction
 This is the official PyTorch implementation of our paper "Real-time Holistic Robot Pose Estimation with Unknown States".
 
 The overall framework is presented below.
 
-<img src="assets/framework.jpg" width="800"/>
+<img src="asset/framework.jpg" width="800"/>
 
 ## Installation
 This project's dependencies include python 3.9, pytorch 1.13 and CUDA 11.7.
