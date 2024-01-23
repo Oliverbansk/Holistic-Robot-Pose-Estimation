@@ -328,8 +328,8 @@ def farward_loss(args, input_batch, model, robot, device, device_id, train=True)
     
     
 def validate(args, epoch, dsname, loader, model, robot, writer, device, device_id):
-    assert (ds != "photo" or args.urdf_robot_name != "baxter") # ds == photo -> not baxter
-    assert (ds in ["dr", "photo"] or args.urdf_robot_name == "panda") # ds != dr/photo -> panda
+    assert (dsname != "photo" or args.urdf_robot_name != "baxter") # ds == photo -> not baxter
+    assert (dsname in ["dr", "photo"] or args.urdf_robot_name == "panda") # ds != dr/photo -> panda
     
     # loader = test_loader_dict[ds]
     ds = "_"+dsname

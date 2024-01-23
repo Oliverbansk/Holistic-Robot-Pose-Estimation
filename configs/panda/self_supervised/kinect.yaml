@@ -37,6 +37,7 @@ epoch_size : 104950
 n_epochs : 700
 n_dataloader_workers : 6
 save_epoch_interval : None
+clip_gradient : 10.0
 
 # Method
 use_direct_reg_branch : True

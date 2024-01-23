@@ -429,20 +429,7 @@ def get_rootNetwithRegInt_model(init_params_dict, args, **kwargs):
         # print(pretrained_weights.keys())
         model.load_state_dict(pretrained_weights, strict=False)
     else:
-        print(f"Not using pretrained rootnet weights for rootNetWithRegression pipeline. ")
-        
-    if args.pretrained_onlyregression is not None:
-        pretrained_path = args.pretrained_onlyregression
-        pretrained_checkpoint = torch.load(pretrained_path)
-        print(f"Using {args.pretrained_onlyregression} as pretrained onlyregression weights for rootNetWithRegression pipeline. ")
-        pretrained_rootnet_weights = pretrained_checkpoint["model_state_dict"]
-        pretrained_weights = {}
-        for k, v in pretrained_rootnet_weights.items():
-            if v is not None:
-                pretrained_weights[k] = v
-        # print(pretrained_weights.keys())
-        model.load_state_dict(pretrained_weights, strict=False)
-    else:
-        print(f"Not using pretrained onlyregression weights for rootNetWithRegression pipeline. ")
+        print(f"Not using pretrained depthnet weights for the full network training stage. ")
+
     
     return model

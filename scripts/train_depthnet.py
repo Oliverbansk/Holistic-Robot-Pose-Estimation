@@ -147,7 +147,7 @@ def train_depthnet(args):
     
     # for loop
     for epoch in range(start_epoch, end_epoch + 1):
-        print('In epoch {} ----------------- (script: training rootnet)'.format(epoch + 1))
+        print('In epoch {} ----------------- (script: training DepthNet only)'.format(epoch + 1))
         
         def farward_loss(args,input_batch, device, model, train=True):
             if train:

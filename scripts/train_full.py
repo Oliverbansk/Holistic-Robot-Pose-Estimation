@@ -61,8 +61,9 @@ def train_full(args):
             optimizer.zero_grad()
             loss, loss_dict = farward_loss(args=args, input_batch=sample, model=model, robot=robot, device=device, device_id=device_id, train=True)
             loss.backward()
-            clipping_value = 5.0
-            torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
+            if args.clip_gradient is not None:
+                clipping_value = args.clip_gradient
+                torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
             optimizer.step()
             losses.add(loss.detach().cpu().numpy())
             losses_pose.add(loss_dict["loss_joint"].detach().cpu().numpy())

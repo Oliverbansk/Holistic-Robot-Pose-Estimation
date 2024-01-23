@@ -31,6 +31,8 @@ start_decay : 23
 end_decay: 90
 final_decay : 0.01
 exponent : 0.95
+clip_gradient : 5.0
+
 
 # Training
 batch_size : 64

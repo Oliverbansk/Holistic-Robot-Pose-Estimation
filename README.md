@@ -1,13 +1,13 @@
 # Real-time Holistic Robot Pose Estimation with Unknown States
 
-<img src="asset/teaser.png" width="800"/>
+<img src="assets/teaser.png" width="800"/>
 
 ## Introduction
 This is the official PyTorch implementation of our paper "Real-time Holistic Robot Pose Estimation with Unknown States".
 
 The overall framework is presented below.
 
-<img src="asset/framework.png" width="800"/>
+<img src="assets/framework.png" width="800"/>
 
 ## Installation
 This project's dependencies include python 3.9, pytorch 1.13 and CUDA 11.7.
@@ -22,8 +22,8 @@ The code is developed and tested on Ubuntu 20.04.
 
 In our work, we use the following data and pretrained model:
 * The [DREAM datasets](https://drive.google.com/drive/folders/1uNK2n9wU4tRE07sM_r640wDhwmOwuxx6) consisting of both real and synthetic subsets, placed under `${ROOT}/data/dream/$`.
-* The [URDF](https://drive.google.com/drive/folders/1x8WDx1uF4DovTH1HaB5CBziz70Zb4SnJ) (Unified Robotics Description Format) of robot Panda, Kuka and Baxter, placed under `${ROOT}/data/deps/$`.
-* The [HRnet backbone weights](https://drive.google.com/file/d/1eqIftq1T_oIGhmCfkVYSM245Wj5xZaUo/view?) for pose estimation, placed under `${ROOT}/models/$`.
+* The [URDF](https://drive.google.com/drive/folders/17KNhy28pypheYfDCxgOjJf4IyUnOI3gW?) (Unified Robotics Description Format) of robot Panda, Kuka and Baxter, placed under `${ROOT}/data/deps/$`.
+* The [pretrained HRnet backbone](https://drive.google.com/file/d/1eqIftq1T_oIGhmCfkVYSM245Wj5xZaUo/view?) for pose estimation, placed under `${ROOT}/models/$`.
 * The openly available [foreground segmentation model](https://drive.google.com/drive/folders/1PpXe3p5dJt9EOM-fwvJ9TNStTWTQFDNK?) of 4 real datasets of Panda from [CtRNet](https://github.com/ucsdarclab/CtRNet-robot-pose-estimation), placed under `${ROOT}/models/panda_segmentation/$`.
 
 You can download the data and models through provided links. 
@@ -62,18 +62,18 @@ ${ROOT}
 ## Train
 We train our final model in a multi-stage fashion. All model is trained using a single NVIDIA V100 with 32GB GPU. Distributed training is also supported.
 
-We use config files in `./config` to specify the training process. We recommend filling in the `exp_name` field in the config files with a unique name, as the checkpoints and event logs produced during training will be saved under `experiments/{exp_name}`.
+We use config files in `configs/` to specify the training process. We recommend filling in the `exp_name` field in the config files with a unique name, as the checkpoints and event logs produced during training will be saved under `experiments/{exp_name}`. The correspondent config file will be automatically copied into this directory.
 
 ### Synthetic Datasets
 
-Firstly, pretrain the depthnet (root depth estimator) for 90 epochs for each robot arm:
+Firstly, pretrain the depthnet (root depth estimator) for 100 epochs for each robot arm:
 ```bash
 python scripts/train.py --config configs/panda/depthnet.yaml
 python scripts/train.py --config configs/kuka/depthnet.yaml
 python scripts/train.py --config configs/baxter/depthnet.yaml
 ```
 
-With depthnet pretrained, we can train the full network for 90 epochs:
+With depthnet pretrained, we can train the full network for 100 epochs:
 ```bash
 python scripts/train.py --config configs/panda/full.yaml
 python scripts/train.py --config configs/kuka/full.yaml
@@ -85,24 +85,26 @@ To save your time when reproducing results of our paper, we provide readily-pret
 
 We employ self-supervised training for the 4 real datasets of Panda.
 
-Firstly, train the model on synthetic dataset using `configs/panda/self_supervised/synth.yaml` for 90 epochs. Besure to fill in the `pretrained_rootnet` field with the path of the pretrained Panda depthnet weight in advance.
+Firstly, train the model on synthetic dataset using `configs/panda/self_supervised/synth.yaml` for 100 epochs. Be sure to fill in the `pretrained_rootnet` field with the path of the pretrained Panda depthnet weight in advance.
 
 ```bash
 python scripts/train.py --config configs/panda/self_supervised/synth.yaml
 ```
-The checkpoints generated will include checkpoints for further self-supervised training (e.g. `experiments/{exp_name}/ckpt/curr_best_auc(add)_azure_model.pk`). Besure to modify the `configs/panda/self_supervised/{real_dataset}.yaml` file by filling in the `pretrained_weight_on_synth` field with the path of the correspondent checkpoint in advance. 
+The training process above saves checkpoints for 4 real datasets for further self-supervised training (e.g. `experiments/{exp_name}/ckpt/curr_best_auc(add)_azure_model.pk`). 
+
+When finished training on synthetic data, modify the `configs/panda/self_supervised/{real_dataset}.yaml` file by filling in the `pretrained_weight_on_synth` field with the path of the correspondent checkpoint. Then start self-supervised training with:
 
 ```bash
 python scripts/train.py --config configs/panda/self_supervised/azure.yaml
-python scripts/train.py --config configs/panda/self_supervised/kinect360.yaml
+python scripts/train.py --config configs/panda/self_supervised/kinect.yaml
 python scripts/train.py --config configs/panda/self_supervised/realsense.yaml
 python scripts/train.py --config configs/panda/self_supervised/orb.yaml
 ```
 
 ## Test
-Each model generated in training is combined with its correspondent config file, which is automatically copied into the `experiments/{exp_name}/` directory as training starts. To evaluate models, simply run:
+To evaluate models, simply run:
 ```bash
-python scripts/test.py --exp_name {exp_name}
+python scripts/test.py --exp_path {path of the experiment folder}
 ```
 
 ## Model Zoo

@@ -5,7 +5,7 @@ device_id : [0]
 
 # experiment name (also name of the saving directory)
 # model and log directory : {ROOT}/experiment/{exp_name}/
-exp_name : "panda_full" 
+exp_name : "panda_full2" 
 
 # Data
 urdf_robot_name : "panda"
@@ -37,6 +37,7 @@ epoch_size : 104950
 n_epochs : 700
 n_dataloader_workers : 6
 save_epoch_interval : None
+clip_gradient : 5.0
 
 # Method
 use_direct_reg_branch : True

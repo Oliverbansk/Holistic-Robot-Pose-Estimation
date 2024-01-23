@@ -108,7 +108,7 @@ def train_sim2real(args):
     if args.resume_run:
         print(f"resuming experiments of {args.resume_experiment_name}")
         resume_dir =  os.path.join("experiments" , args.resume_experiment_name)
-        path = os.path.join(resume_dir, 'ckpt/curr_best_auc(add)_model_az_1103_iou_align.pk')
+        path = os.path.join(resume_dir, 'ckpt/curr_best_auc(add)_model.pk')
         checkpoint = torch.load(path)
         state_dict = checkpoint['model_state_dict']
         model.load_state_dict(state_dict)
@@ -642,8 +642,9 @@ def train_sim2real(args):
             optimizer.zero_grad()
             loss, loss_dict = farward_loss(args=args,input_batch=sample, device=device, model=model, train=True, batchid=batchid, epoch_log=epoch)
             loss.backward()
-            clipping_value = 10.0
-            torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
+            if args.clip_gradient is not None:
+                clipping_value = args.clip_gradient
+                torch.nn.utils.clip_grad_norm_(model.parameters(), clipping_value)
             optimizer.step() 
             losses.add(loss.detach().cpu().numpy())
             losses_mask.add(loss_dict["loss_mask"].detach().cpu().numpy())
