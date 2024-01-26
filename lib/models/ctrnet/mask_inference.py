@@ -80,7 +80,7 @@ class seg_keypoint_inference(torch.nn.Module):
         args.fx, args.fy, args.px, args.py = 320,320,320,240
         args.width, args.height = int(args.width * args.scale), int(args.height * args.scale)
         args.fx, args.fy, args.px, args.py = args.fx * args.scale, args.fy * args.scale, args.px * args.scale, args.py * args.scale
-        args.keypoint_seg_model_path = "seg_weights/panda/panda-3cam_azure/net.pth"
+        args.keypoint_seg_model_path = "models/panda_segmentation/azure.pth"
         
         return args
          

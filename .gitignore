@@ -5,3 +5,6 @@ __pycache__
 /data
 /experiments
 /models
+/unit_test
+
+run.sh

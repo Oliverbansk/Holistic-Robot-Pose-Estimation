@@ -387,21 +387,21 @@ def train_depthnet(args):
                             }, save_path_dr)
         
         if urdf_robot_name == "panda":
-            for real_name in ["azure", "kinect", "realsense", "orb"]:
-                if saves[real_name]:
-                    if mean_depth_error_4real[real_name] < curr_min_loss_4real[real_name]:
-                        curr_min_loss_4real[real_name] = mean_depth_error_4real[real_name]
-                        if args.use_schedule:
-                            last_epoch = lr_scheduler.last_epoch
-                        else:
-                            last_epoch = -1
-                        torch.save({
-                                    'epoch': epoch,
-                                    'loss': mean_depth_error_4real[real_name],
-                                    'model_state_dict': model.state_dict(),
-                                    'optimizer_state_dict': optimizer.state_dict(),
-                                    'lr_scheduler_last_epoch':last_epoch,
-                                    }, save_path[real_name])
+            # for real_name in ["azure", "kinect", "realsense", "orb"]:
+            #     if saves[real_name]:
+            #         if mean_depth_error_4real[real_name] < curr_min_loss_4real[real_name]:
+            #             curr_min_loss_4real[real_name] = mean_depth_error_4real[real_name]
+            #             if args.use_schedule:
+            #                 last_epoch = lr_scheduler.last_epoch
+            #             else:
+            #                 last_epoch = -1
+            #             torch.save({
+            #                         'epoch': epoch,
+            #                         'loss': mean_depth_error_4real[real_name],
+            #                         'model_state_dict': model.state_dict(),
+            #                         'optimizer_state_dict': optimizer.state_dict(),
+            #                         'lr_scheduler_last_epoch':last_epoch,
+            #                         }, save_path[real_name])
             if saves["allreal"]:
                 if mean_depth_error_allreal < curr_min_loss_allreal:
                     curr_min_loss_allreal = mean_depth_error_allreal
