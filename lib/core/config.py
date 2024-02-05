@@ -23,7 +23,7 @@ def make_default_cfg():
     
     # data 
     cfg.urdf_robot_name = "panda"
-    cfg.train_ds_names = os.path.abspath(LOCAL_DATA_DIR / "panda_synth_train_dr")
+    cfg.train_ds_names = os.path.abspath(LOCAL_DATA_DIR / "dream/real/panda_synth_train_dr")
     cfg.image_size = 256.0
     
     # augmentation during training

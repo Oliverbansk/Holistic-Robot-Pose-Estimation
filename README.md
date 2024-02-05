@@ -10,12 +10,13 @@ The overall framework is presented below.
 <img src="assets/framework.png" width="800"/>
 
 ## Installation
-This project's dependencies include python 3.9, pytorch 1.13 and CUDA 11.7.
+This project's dependencies include python 3.9, pytorch 1.13, pytorch3d 0.7.4 and CUDA 11.7.
 The code is developed and tested on Ubuntu 20.04.
 
 ```bash
     pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117
     pip install -r requirements.txt
+    conda install pytorch3d=0.7.4 # from https://anaconda.org/pytorch3d/pytorch3d/files
 ```
 
 ## Data and Model Preparation
@@ -104,11 +105,13 @@ python scripts/train.py --config configs/panda/self_supervised/orb.yaml
 ## Test
 To evaluate models, simply run:
 ```bash
-python scripts/test.py --exp_path {path of the experiment folder}
+python scripts/test.py --exp_path {path of the experiment folder} --dataset {dataset name}
+# e.g. python scripts/test.py -e experiments/panda_full --dataset panda_synth_test_dr
 ```
+Note that each model is presented in a folder containing ckpt/, log/ and config.yaml. After running test script, result/ will be generated.
 
 ## Model Zoo
-You can download our final models from Google Drive and evaluate them yourself.
+You can download our final models from Google Drive and evaluate them yourself.  
 |  Datasets |  Model Weight |
 |-----------|-------------|
 |  Panda  |               | 

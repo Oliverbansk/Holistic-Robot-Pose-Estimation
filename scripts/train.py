@@ -7,7 +7,7 @@ from lib.config import LOCAL_DATA_DIR
 from lib.core.config import make_cfg
 from scripts.train_depthnet import train_depthnet
 from scripts.train_sim2real import train_sim2real
-from scripts.train_sim2real_real import train_sim2real_real
+# from scripts.train_sim2real_real import train_sim2real_real
 from scripts.train_full import train_full
 
 # off no use
@@ -248,7 +248,7 @@ if __name__ == '__main__':
     
     elif cfg.use_sim2real_real:
         print("\n pipeline: self-supervised training on my real datasets \n")
-        train_sim2real_real(cfg)
+        # train_sim2real_real(cfg)
         
         
     

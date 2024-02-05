@@ -163,12 +163,6 @@ def summary_add_pck(alldis):
 
 
 def draw_add_curve(alldis, savename, testdsname, auc):
-    if "dr" in testdsname.split("/")[-1]:
-        ds = "dr"
-    elif "photo" in testdsname.split("/")[-1]:
-        ds = "photo"
-    else:
-        ds = testdsname.split("/")[-1]
         
     dis3d = np.array(alldis['dis3d'])
     auc_threshold = 0.1
@@ -193,10 +187,6 @@ def draw_add_curve(alldis, savename, testdsname, auc):
     plt.axvline(x=np.median(dis3d), color='green', linestyle='--', label='median distance')
     plt.title("ADD curve")
     plt.text(x=0.001, y=0.9, s="auc="+str(round(auc*100, ndigits=2)))
-    plt.text(x=0.05, y= 0.42, s="experient name: \n" + \
-                                savename[0:len(savename)//2] + '\n' + \
-                                savename[len(savename)//2:] + '\n' + \
-                                "dataset name: " + ds)
     plt.legend()
     
     plt.subplot(grid[0,1])
@@ -218,14 +208,10 @@ def draw_add_curve(alldis, savename, testdsname, auc):
 
     dataset_name = testdsname.split("/")[-1]
     
-    # plt.savefig("unit_test/add_curve/"+savename+"_"+ds+".jpg")
-    os.makedirs(f"vis/{savename}/{dataset_name}/", exist_ok=True)
-    plt.savefig(f"vis/{savename}/{dataset_name}/add_distribution_curve.jpg")
+    plt.savefig(os.path.join(savename, f"add_distribution_curve_{dataset_name}.jpg"))
     print("drawn add curve in folder vis")
     plt.close()
-    
-    # np.savez(f"vis/{savename}/{dataset_name}/dis_counts.npz", dis3d=dis3d, counts=counts_3d)
-    
+        
 
 def draw_depth_figure(alldis, savename, testdsname):
     if "dr" in testdsname.split("/")[-1]:
