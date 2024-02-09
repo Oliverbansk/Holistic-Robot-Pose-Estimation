@@ -7,7 +7,6 @@ from lib.config import LOCAL_DATA_DIR
 from lib.core.config import make_cfg
 from scripts.train_depthnet import train_depthnet
 from scripts.train_sim2real import train_sim2real
-# from scripts.train_sim2real_real import train_sim2real_real
 from scripts.train_full import train_full
     
 
