@@ -1,6 +1,6 @@
 # Real-time Holistic Robot Pose Estimation with Unknown States
 
-<img src="assets/teaser.pdf" width="800"/>
+<img src="assets/teaser.png" width="800"/>
 
 ## Introduction
 This is the official PyTorch implementation of our paper "Real-time Holistic Robot Pose Estimation with Unknown States".
