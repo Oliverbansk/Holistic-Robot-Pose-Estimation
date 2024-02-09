@@ -1,6 +1,6 @@
 # Real-time Holistic Robot Pose Estimation with Unknown States
 
-<img src="assets/teaser.png" width="800"/>
+<img src="assets/teaser.pdf" width="800"/>
 
 ## Introduction
 This is the official PyTorch implementation of our paper "Real-time Holistic Robot Pose Estimation with Unknown States".
@@ -111,13 +111,26 @@ python scripts/test.py --exp_path {path of the experiment folder} --dataset {dat
 Note that each model is presented in a folder containing ckpt/, log/ and config.yaml. After running test script, result/ will be generated.
 
 ## Model Zoo
-You can download our final models from Google Drive and evaluate them yourself.  
+You can download our final models from Google Drive and evaluate them yourself (will be uploaded soon).  
 |  Datasets |  Model Weight |
 |-----------|-------------|
 |  Panda  |               | 
 |   Kuka  |               |
 |  Baxter |               |
 
+
+## Citation
+If you use our code or models in your research, please cite with:
+```
+@misc{ban2024realtime,
+      title={Real-time Holistic Robot Pose Estimation with Unknown States}, 
+      author={Shikun Ban and Juling Fan and Wentao Zhu and Xiaoxuan Ma and Yu Qiao and Yizhou Wang},
+      year={2024},
+      eprint={2402.05655},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
 
 ## Acknowledgment
 This repo is built on the excellent work [RoboPose](https://github.com/ylabbe/robopose) and [CtRNet](https://github.com/ucsdarclab/CtRNet-robot-pose-estimation). Thank the authors for releasing their codes.
