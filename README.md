@@ -3,7 +3,7 @@
 <div align="left">
 
   <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a> 
-  [![arXiv](https://img.shields.io/badge/arXiv-2210.06551-b31b1b.svg)](https://arxiv.org/abs/2402.05655.pdf) 
+  [![arXiv](https://img.shields.io/badge/arXiv-2402.05655-b31b1b.svg)](https://arxiv.org/abs/2402.05655.pdf) 
   <a href="https://oliverbansk.github.io/Holistic-Robot-Pose/"><img alt="Project" src="https://img.shields.io/badge/-Project%20Page-lightgrey?logo=Google%20Chrome&color=informational&logoColor=white"></a> 
   <a href="https://www.youtube.com/watch?v=b1gXdUFZjd4"><img alt="Demo" src="https://img.shields.io/badge/-Demo-ea3323?logo=youtube"></a>
 
@@ -119,15 +119,10 @@ To evaluate models, simply run:
 python scripts/test.py --exp_path {path of the experiment folder} --dataset {dataset name}
 # e.g. python scripts/test.py -e experiments/panda_full --dataset panda_synth_test_dr
 ```
-Note that each model is presented in a folder containing ckpt/, log/ and config.yaml. After running test script, result/ will be generated.
+Note that each model is presented in a folder containing ckpt/, log/ and config.yaml. After running test script, result/ will be generated inside the folder.
 
 ## Model Zoo
-You can download our final models from Google Drive and evaluate them yourself (will be uploaded soon).  
-|  Datasets |  Model Weight |
-|-----------|-------------|
-|  Panda  |               | 
-|   Kuka  |               |
-|  Baxter |               |
+You can download our final models from [Google Drive](https://drive.google.com/drive/folders/10Gz0NP39YyuvAlrhTa-XssWTDlyh9v80?usp=sharing) and evaluate them yourself.  
 
 
 ## Citation
