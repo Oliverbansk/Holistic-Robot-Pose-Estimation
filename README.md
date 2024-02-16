@@ -7,7 +7,7 @@
   <a href="https://oliverbansk.github.io/Holistic-Robot-Pose/"><img alt="Project" src="https://img.shields.io/badge/-Project%20Page-lightgrey?logo=Google%20Chrome&color=informational&logoColor=white"></a> 
   <a href="https://www.youtube.com/watch?v=b1gXdUFZjd4"><img alt="Demo" src="https://img.shields.io/badge/-Demo-ea3323?logo=youtube"></a>
 
-  [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/real-time-holistic-robot-pose-estimation-with/pose-estimation-on-dream-dataset)](https://paperswithcode.com/sota/pose-estimation-on-dream-dataset?p=real-time-holistic-robot-pose-estimation-with)
+  [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/real-time-holistic-robot-pose-estimation-with/robot-pose-estimation-on-dream-dataset)](https://paperswithcode.com/sota/robot-pose-estimation-on-dream-dataset?p=real-time-holistic-robot-pose-estimation-with)
   
 </div>
 
