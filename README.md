@@ -127,14 +127,12 @@ You can download our final models from [Google Drive](https://drive.google.com/d
 
 ## Citation
 If you use our code or models in your research, please cite with:
-```
-@misc{ban2024realtime,
-      title={Real-time Holistic Robot Pose Estimation with Unknown States}, 
-      author={Shikun Ban and Juling Fan and Wentao Zhu and Xiaoxuan Ma and Yu Qiao and Yizhou Wang},
-      year={2024},
-      eprint={2402.05655},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+```bibtex
+@article{ban2024real,
+  title={Real-time Holistic Robot Pose Estimation with Unknown States},
+  author={Ban, Shikun and Fan, Juling and Zhu, Wentao and Ma, Xiaoxuan and Qiao, Yu and Wang, Yizhou},
+  journal={arXiv preprint arXiv:2402.05655},
+  year={2024}
 }
 ```
 
