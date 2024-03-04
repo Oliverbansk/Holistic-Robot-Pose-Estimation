@@ -13,13 +13,13 @@
 
 <img src="assets/teaser_small.gif" width="800"/>
 
-The majority of previous robot pose estimation methods assume known robot joint states. 
+<!-- The majority of previous robot pose estimation methods assume known robot joint states. 
 In contrast, the <strong>holistic robot pose estimation problem (our setting)</strong> 
 requires estimating both joint states and the camera-to-robot pose.
 
 For holistic robot pose estimation, 
 Previous work suffers from heavy computation burdens. 
-In contrast, <strong>our single-feed-forward method achieves state-of-the-art accuracy with a 12-time speed boost</strong>.
+In contrast, <strong>our single-feed-forward method achieves state-of-the-art accuracy with a 12-time speed boost</strong>. -->
 
 ## Introduction
 This is the official PyTorch implementation of our paper "Real-time Holistic Robot Pose Estimation with Unknown States".
