@@ -11,7 +11,7 @@
   
 </div>
 
-<img src="assets/teaser.png" width="800"/>
+<img src="assets/teaser_small.gif" width="800"/>
 
 The majority of previous robot pose estimation methods assume known robot joint states. 
 In contrast, the <strong>holistic robot pose estimation problem (our setting)</strong> 
