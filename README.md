@@ -8,25 +8,12 @@
   <a href="https://www.youtube.com/watch?v=b1gXdUFZjd4"><img alt="Demo" src="https://img.shields.io/badge/-Demo-ea3323?logo=youtube"></a>
 
   [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/real-time-holistic-robot-pose-estimation-with/robot-pose-estimation-on-dream-dataset)](https://paperswithcode.com/sota/robot-pose-estimation-on-dream-dataset?p=real-time-holistic-robot-pose-estimation-with)
-  
+
 </div>
 
-<img src="assets/teaser.png" width="800"/>
+<img src="assets/holistic.gif" width="800"/>
 
-The majority of previous robot pose estimation methods assume known robot joint states. 
-In contrast, the <strong>holistic robot pose estimation problem (our setting)</strong> 
-requires estimating both joint states and the camera-to-robot pose.
-
-For holistic robot pose estimation, 
-Previous work suffers from heavy computation burdens. 
-In contrast, <strong>our single-feed-forward method achieves state-of-the-art accuracy with a 12-time speed boost</strong>.
-
-## Introduction
-This is the official PyTorch implementation of our paper "Real-time Holistic Robot Pose Estimation with Unknown States".
-
-The overall framework is presented below.
-
-<img src="assets/framework.png" width="800"/>
+This is the official PyTorch implementation of the paper "Real-time Holistic Robot Pose Estimation with Unknown States". It provides an efficient framework for <b>real-time</b> robot pose estimation from RGB images <b>without</b> requiring known robot states.
 
 ## Installation
 This project's dependencies include python 3.9, pytorch 1.13, pytorch3d 0.7.4 and CUDA 11.7.
