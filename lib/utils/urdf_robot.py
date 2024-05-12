@@ -363,13 +363,13 @@ class URDFRobot:
         fk = self.robot_visual.visual_trimesh_fk(cfg=joint)
         scene = pyrender.Scene()
         camera = pyrender.IntrinsicsCamera(*intrinsics)
-        # azure
-        light = pyrender.PointLight(color=[1.5, 1.5, 1.5], intensity=2.6)
+        # # azure
+        # light = pyrender.PointLight(color=[1.5, 1.5, 1.5], intensity=2.6)
         # realsense, kinect
-        # light = pyrender.PointLight(color=[1.4, 1.4, 1.4], intensity=2.4)
-        # light_pose = np.eye(4)
-        # light_pose[:3, 3] = np.array([0, 1, 0])
-        # scene.add(light, pose=light_pose)
+        light = pyrender.PointLight(color=[1.4, 1.4, 1.4], intensity=2.4)
+        light_pose = np.eye(4)
+        light_pose[:3, 3] = np.array([0, 1, 0])
+        scene.add(light, pose=light_pose)
         # orb
         # light = pyrender.PointLight(color=[1.4, 1.4, 1.4], intensity=2.4)
         # light_pose = np.eye(4)

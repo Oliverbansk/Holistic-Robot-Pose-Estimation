@@ -19,6 +19,23 @@ class PartialSampler(Sampler):
     def __iter__(self):
         return (i.item() for i in torch.randperm(self.n_items)[:len(self)])
     
+    
+class PercentSampler(Sampler):
+    def __init__(self, ds, epoch_size, perc=1):
+        self.n_items = len(ds)
+        if epoch_size is not None:
+            self.epoch_size = min(epoch_size, len(ds))
+        else:
+            self.epoch_size = len(ds)
+        self.epoch_size = int(perc * self.epoch_size)
+        super().__init__(None)
+
+    def __len__(self):
+        return self.epoch_size
+
+    def __iter__(self):
+        return (i.item() for i in torch.randperm(self.n_items)[:len(self)])
+    
 
 class ListSampler(Sampler):
     def __init__(self, ids):

@@ -251,7 +251,10 @@ def test_network(args):
                 for th_p in pck_thresholds:
                     f.write(f'ADD_2d<{th_p}pixel: ' + str(summary[f'PCK_{th_p}_pixel']) + '\n')
                 for k in range(robot.dof):
-                    f.write(f'Joint_l1_error/joint_{k+1} (degree): {metric_l1joint[k].mean / np.pi * 180.0} \n')
+                    if urdf_robot_name == "panda" and k ==7 :
+                        f.write(f'Joint_l1_error/joint_8 (mm): {metric_l1joint[k].mean * 1000} \n')
+                        break
+                    f.write(f'Joint_l1_error/joint_{k+1} (degree): {metric_l1joint[k].mean / np.pi * 180.0} \n') 
                 f.write("Runtimes:\n")
                 f.write(f"Runtime of rootnet: {time_root.mean} \n")
                 f.write(f"Runtime of regression+integral: {time_other.mean} \n")

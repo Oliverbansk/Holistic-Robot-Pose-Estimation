@@ -5,7 +5,7 @@ device_id : [0]
 
 # experiment name (also name of the saving directory)
 # model and log directory : {ROOT}/experiment/{exp_name}/
-exp_name : "panda_depthnet" 
+exp_name : "panda_depthnet_resnet50" 
 
 # Data
 urdf_robot_name : "panda"
@@ -14,7 +14,7 @@ val_ds_names : None
 image_size : 256.0
 
 # Model
-backbone_name : "hrnet32"
+backbone_name : "resnet50"
 split_reg_head : False
 split_type : "2-first"
 use_rpmg: False
@@ -37,6 +37,8 @@ epoch_size : 104950
 n_epochs : 700
 n_dataloader_workers : 6
 save_epoch_interval : None
+resample_train : False
+resample_perc : 1.0
 
 # Method
 use_direct_reg_branch : False
@@ -84,5 +86,5 @@ extend_ratio : [0.2, 0.13]
 use_rootnet_with_angle: False
 
 # Resume
-resume_run : False
-resume_experiment_name : "resume_name"
+resume_run : True
+resume_experiment_name : "panda_depthnet_resnet50"

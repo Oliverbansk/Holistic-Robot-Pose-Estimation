@@ -33,7 +33,7 @@ DREAM_DS_DIR = LOCAL_DATA_DIR / 'dream'
 PANDA_DESCRIPTION_PATH = os.path.abspath(DEPS_DIR / "panda-description/panda.urdf")
 PANDA_DESCRIPTION_PATH_VISUAL = os.path.abspath(DEPS_DIR / "panda-description/patched_urdf/panda.urdf")
 KUKA_DESCRIPTION_PATH = os.path.abspath(DEPS_DIR / "kuka-description/iiwa_description/urdf/iiwa7.urdf")
-BAXTER_DESCRIPTION_PATH = os.path.abspath("/DATA/disk1/cvda_share/robopose_data/deps/baxter-description/baxter_description/urdf/baxter.urdf")
+BAXTER_DESCRIPTION_PATH = os.path.abspath(DEPS_DIR / "baxter-description/baxter_description/urdf/baxter.urdf")
 
 OWI_DESCRIPTION = os.path.abspath(DEPS_DIR / 'owi-description' / 'owi535_description' / 'owi535.urdf')
 OWI_KEYPOINTS_PATH = os.path.abspath(DEPS_DIR / 'owi-description' / 'keypoints.json')

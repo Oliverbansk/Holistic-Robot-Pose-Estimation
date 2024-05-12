@@ -7,7 +7,7 @@ import torch
 from lib.dataset.const import JOINT_NAMES
 from lib.dataset.dream import DreamDataset
 from lib.dataset.multiepoch_dataloader import MultiEpochDataLoader
-from lib.dataset.samplers import PartialSampler
+from lib.dataset.samplers import PartialSampler, PercentSampler
 from lib.models.depth_net import get_rootnet
 from lib.utils.urdf_robot import URDFRobot
 from lib.utils.utils import cast, set_random_seed, create_logger, get_scheduler
@@ -62,6 +62,8 @@ def train_depthnet(args):
     if args.resample:
         weights_sampler = np.load("unit_test/z_weights.npy")
         train_sampler = WeightedRandomSampler(weights_sampler, num_samples=min(args.epoch_size, len(ds_train))) 
+    if args.resample_train:
+        train_sampler = PercentSampler(ds_train, epoch_size=args.epoch_size, perc=args.resample_perc)
     ds_iter_train = DataLoader(
         ds_train, sampler=train_sampler, batch_size=args.batch_size, num_workers=args.n_dataloader_workers, drop_last=False, pin_memory=True
     )
@@ -125,14 +127,14 @@ def train_depthnet(args):
         last_epoch = checkpoint['lr_scheduler_last_epoch']
         curr_min_loss = checkpoint["loss"]
         if urdf_robot_name == "panda":
-            for postfix in ['ckpt/curr_best_root_depth_azure_model.pk', 'ckpt/curr_best_root_depth_kinect_model.pk', 'ckpt/curr_best_root_depth_realsense_model.pk', 'ckpt/curr_best_root_depth_orb_model.pk']:   
-                model_path = os.path.join(resume_dir, postfix)
-                ckpt = torch.load(model_path)
-                curr_min_loss_onreal = ckpt["loss"]
-                for real_name in curr_min_loss_4real.keys():
-                    if real_name in postfix:
-                        curr_min_loss_4real[real_name] = curr_min_loss_onreal
-                        break
+            # for postfix in ['ckpt/curr_best_root_depth_azure_model.pk', 'ckpt/curr_best_root_depth_kinect_model.pk', 'ckpt/curr_best_root_depth_realsense_model.pk', 'ckpt/curr_best_root_depth_orb_model.pk']:   
+            #     model_path = os.path.join(resume_dir, postfix)
+            #     ckpt = torch.load(model_path)
+            #     curr_min_loss_onreal = ckpt["loss"]
+            #     for real_name in curr_min_loss_4real.keys():
+            #         if real_name in postfix:
+            #             curr_min_loss_4real[real_name] = curr_min_loss_onreal
+            #             break
             model_path = os.path.join(resume_dir, "ckpt/curr_best_root_depth_allreal_model.pk")
             ckpt_allreal = torch.load(model_path)
             curr_min_loss_allreal = ckpt_allreal["loss"]

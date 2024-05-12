@@ -20,6 +20,8 @@ def make_default_cfg():
     cfg.n_epochs = 700
     cfg.n_dataloader_workers = int(os.environ.get('N_CPUS', 10)) - 2
     cfg.clip_gradient = 10.0
+    cfg.resample_train = False
+    cfg.resample_perc = 1.0
     
     # data 
     cfg.urdf_robot_name = "panda"
