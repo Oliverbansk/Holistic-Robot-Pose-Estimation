@@ -147,6 +147,7 @@ def make_cfg(args):
             if k in cfg:
                 if k == "n_dataloader_workers":
                     cfg[k] = min(cfg[k], v)
+                    cfg[k] = v
                 elif k == "train_ds_names":
                     cfg[k] = os.path.abspath(LOCAL_DATA_DIR / v)
                     if "move" in v:

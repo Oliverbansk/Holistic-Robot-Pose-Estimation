@@ -410,7 +410,8 @@ def get_rootNetwithRegInt_model(init_params_dict, args, **kwargs):
     
     model = RootNetwithRegInt(init_params_dict, args, **kwargs)
     
-    model.reg_backbone.init_weights(args.backbone_name)
+    if args.rootnet_backbone_name not in ["hrnet", "hrnet32"]:
+        model.reg_backbone.init_weights(args.backbone_name)
     if args.rootnet_backbone_name not in ["hrnet", "hrnet32"]:
         model.rootnet_backbone.init_weights(args.rootnet_backbone_name)
     

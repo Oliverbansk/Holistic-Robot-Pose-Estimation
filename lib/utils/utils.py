@@ -5,7 +5,7 @@ import random
 import shutil
 from collections import OrderedDict, defaultdict
 from lib.dataset.multiepoch_dataloader import MultiEpochDataLoader
-from lib.dataset.samplers import PartialSampler
+from lib.dataset.samplers import PartialSampler, PercentSampler
 from pathlib import Path
 import numpy as np
 import torch
@@ -92,6 +92,8 @@ def get_dataloaders(args):
                                      color_jitter=False, rgb_augmentation=False, occlusion_augmentation=False) 
     
     train_sampler = PartialSampler(ds_train, epoch_size=args.epoch_size)
+    if args.resample_train:
+        train_sampler = PercentSampler(ds_train, epoch_size=args.epoch_size, perc=args.resample_perc)
     ds_iter_train = DataLoader(
         ds_train, 
         sampler=train_sampler, 
