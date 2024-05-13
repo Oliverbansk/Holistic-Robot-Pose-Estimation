@@ -10,7 +10,7 @@ from lib.dataset.const import (INITIAL_JOINT_ANGLE, INTRINSICS_DICT,
                                     JOINT_NAMES, JOINT_TO_KP)
 from lib.dataset.dream import DreamDataset
 from lib.dataset.multiepoch_dataloader import MultiEpochDataLoader
-from lib.dataset.samplers import PartialSampler
+from lib.dataset.samplers import PartialSampler, PercentSampler
 from lib.models.ctrnet.mask_inference import seg_mask_inference
 from lib.models.full_net import get_rootNetwithRegInt_model
 from lib.utils.BPnP import BPnP_m3d
@@ -51,6 +51,8 @@ def train_sim2real(args):
     other_hw = (int(args.other_image_size),int(args.other_image_size))
     ds_train = DreamDataset(train_ds_names, rootnet_resize_hw=rootnet_hw, other_resize_hw=other_hw, color_jitter=False, rgb_augmentation=False, occlusion_augmentation=False)
     train_sampler = PartialSampler(ds_train, epoch_size=args.epoch_size)
+    if args.resample_train:
+        train_sampler = PercentSampler(ds_train, epoch_size=args.epoch_size, perc=args.resample_perc)
     ds_iter_train = DataLoader(
         ds_train, sampler=train_sampler, batch_size=args.batch_size, num_workers=args.n_dataloader_workers, pin_memory=True
     )

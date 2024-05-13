@@ -20,17 +20,17 @@ if __name__ == '__main__':
     print(cfg)
     print("----------------------------------------------------------------------")
     
-    if cfg.use_rootnet_with_reg_int_shared_backbone:
+    if cfg.use_sim2real:
+        print("\n pipeline: self-supervised training on real datasets \n")
+        train_sim2real(cfg)
+        
+    elif cfg.use_rootnet_with_reg_int_shared_backbone:
         print(f"\n pipeline: full network training (JointNet/RotationNet/KeypoinNet/DepthNet) \n")
         train_full(cfg)
     
     elif cfg.use_rootnet:
         print("\n pipeline: training DepthNet only \n")
         train_depthnet(cfg)
-        
-    elif cfg.use_sim2real:
-        print("\n pipeline: self-supervised training on real datasets \n")
-        train_sim2real(cfg)
     
     elif cfg.use_sim2real_real:
         print("\n pipeline: self-supervised training on my real datasets \n")

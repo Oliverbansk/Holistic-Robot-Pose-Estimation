@@ -28,13 +28,15 @@ class PercentSampler(Sampler):
         else:
             self.epoch_size = len(ds)
         self.epoch_size = int(perc * self.epoch_size)
+        self.indices = torch.randperm(self.n_items)[:self.epoch_size]
         super().__init__(None)
 
     def __len__(self):
         return self.epoch_size
 
     def __iter__(self):
-        return (i.item() for i in torch.randperm(self.n_items)[:len(self)])
+        shuffled_indices = self.indices[torch.randperm(self.epoch_size)]
+        return (i.item() for i in shuffled_indices)
     
 
 class ListSampler(Sampler):
