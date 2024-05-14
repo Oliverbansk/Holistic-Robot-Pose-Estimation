@@ -420,6 +420,8 @@ def get_rootNetwithRegInt_model(init_params_dict, args, **kwargs):
         pretrained_checkpoint = torch.load(pretrained_path)
         print(f"Using {args.pretrained_rootnet} as pretrained rootnet weights for rootNetwithRegInt pipeline. ")
         pretrained_rootnet_weights = pretrained_checkpoint["model_state_dict"]
+        print(f"Loaded weights have been trained for {pretrained_checkpoint['epoch']} epochs.")
+        # print(pretrained_rootnet_weights.keys())
         pretrained_weights = {}
         for k, v in pretrained_rootnet_weights.items():
             if k.startswith("backbone"):

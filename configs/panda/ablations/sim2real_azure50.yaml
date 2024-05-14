@@ -35,7 +35,7 @@ exponent : 0.78
 batch_size : 32
 epoch_size : 104950
 n_epochs : 700
-n_dataloader_workers : 6
+n_dataloader_workers : 8
 save_epoch_interval : None
 clip_gradient : 10.0
 resample_train : True

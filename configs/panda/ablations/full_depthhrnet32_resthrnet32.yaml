@@ -1,11 +1,11 @@
 
 # basic training
 no_cuda : False
-device_id : [0,1]
+device_id : [0]
 
 # experiment name (also name of the saving directory)
 # model and log directory : {ROOT}/experiment/{exp_name}/
-exp_name : "panda_full_depthhrnet32_resthrnet32" 
+exp_name : "panda_full_depthhrnet32_resthrnet32_reference" 
 
 # Data
 urdf_robot_name : "panda"

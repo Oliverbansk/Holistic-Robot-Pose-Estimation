@@ -5,7 +5,7 @@ device_id : [0]
 
 # experiment name (also name of the saving directory)
 # model and log directory : {ROOT}/experiment/{exp_name}/
-exp_name : "panda_full2" 
+exp_name : "panda_full_depthresnet34_restresnet50_allreal" 
 
 # Data
 urdf_robot_name : "panda"
@@ -15,7 +15,7 @@ image_size : 256.0
 
 # Model
 backbone_name : "resnet50"
-rootnet_backbone_name : "hrnet32"
+rootnet_backbone_name : "resnet34"
 rootnet_image_size : 256.0
 other_image_size : 256.0
 use_rpmg: False
@@ -35,7 +35,7 @@ exponent : 0.95
 batch_size : 64
 epoch_size : 104950
 n_epochs : 700
-n_dataloader_workers : 6
+n_dataloader_workers : 8
 save_epoch_interval : None
 clip_gradient : 5.0
 resample_train : False
@@ -88,7 +88,7 @@ rootnet_depth_loss_weight : 1.0
 depth_loss_func : "l1"
 use_rootnet_xy_branch : False
 xy_loss_func : "mse"
-pretrained_rootnet: "models/pretrained_depthnet/panda_pretrained_depthnet.pk"
+pretrained_rootnet: "experiments/panda_depthnet_resnet34/ckpt/curr_best_root_depth_allreal_model.pk"
 use_origin_bbox : False
 use_extended_bbox : True
 
@@ -97,4 +97,4 @@ use_rootnet_with_reg_with_int_separate_backbone : False
 
 # Resume
 resume_run : False
-resume_experiment_name : "resume_experiment_name"
+resume_experiment_name : "panda_full_depthresnet34_restresnet50_allreal"

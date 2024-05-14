@@ -29,6 +29,7 @@ class PercentSampler(Sampler):
             self.epoch_size = len(ds)
         self.epoch_size = int(perc * self.epoch_size)
         self.indices = torch.randperm(self.n_items)[:self.epoch_size]
+        print("self.indices[:30]: ", self.indices[:30])
         super().__init__(None)
 
     def __len__(self):
