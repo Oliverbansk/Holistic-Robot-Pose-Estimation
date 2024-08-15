@@ -123,11 +123,11 @@ You can download our final models from [Google Drive](https://drive.google.com/d
 ## Citation
 If you use our code or models in your research, please cite with:
 ```bibtex
-@article{ban2024real,
+@inproceedings{holisticrobotpose,
+  author={Ban, Shikun and Fan, Juling and Ma, Xiaoxuan and Zhu, Wentao and Qiao, Yu and Wang, Yizhou},
   title={Real-time Holistic Robot Pose Estimation with Unknown States},
-  author={Ban, Shikun and Fan, Juling and Zhu, Wentao and Ma, Xiaoxuan and Qiao, Yu and Wang, Yizhou},
-  journal={arXiv preprint arXiv:2402.05655},
-  year={2024}
+  booktitle = {European Conference on Computer Vision (ECCV)},
+  year = {2024}
 }
 ```
 
