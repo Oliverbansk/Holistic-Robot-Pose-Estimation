@@ -1,6 +1,6 @@
 <h1 align="center"> Real-time Holistic Robot Pose Estimation with Unknown States <br> (ECCV 2024)</h1>
 
-<div align="left">
+<div align="center">
 
   <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a> 
   [![arXiv](https://img.shields.io/badge/arXiv-2402.05655-b31b1b.svg)](https://arxiv.org/abs/2402.05655.pdf) 
