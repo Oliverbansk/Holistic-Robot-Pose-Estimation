@@ -1,4 +1,4 @@
-<h1 align="center"> Real-time Holistic Robot Pose Estimation with Unknown States <br> (ECCV 2024)</h1>
+<h1 align="center"> HoRoPose: Real-time Holistic Robot Pose Estimation with Unknown States <br> (ECCV 2024)</h1>
 
 <div align="center">
 
