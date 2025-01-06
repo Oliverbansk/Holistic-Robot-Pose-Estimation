@@ -113,6 +113,7 @@ To evaluate models, simply run:
 ```bash
 python scripts/test.py --exp_path {path of the experiment folder} --dataset {dataset name}
 # e.g. python scripts/test.py -e experiments/panda_full --dataset panda_synth_test_dr
+# You can add '--vis_skeleton' to visualize the robot keypoint skeleton
 ```
 Note that each model is presented in a folder containing ckpt/, log/ and config.yaml. After running test script, result/ will be generated inside the folder.
 
