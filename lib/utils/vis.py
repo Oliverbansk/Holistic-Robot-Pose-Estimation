@@ -99,16 +99,6 @@ def vis_joints_3d(batch_image, batch_joints, gt_joints, gt_2d, K_original, file_
                         cv2.line(image,(x,y),(x_,y_),(155,50,50),2)
                     cv2.circle(image,(x,y),3,(255,0,0),-2)
                     x_, y_ = x, y
-                if bbox is not None:
-                    bbox_ = [round(num) for num in bbox_]
-                    cv2.circle(image,(bbox_[0],bbox_[1]),4,(255,0,0),-2)
-                    cv2.circle(image,(bbox_[2],bbox_[3]),4,(255,0,0),-2)
-                    cv2.circle(image,(bbox_[0],bbox_[3]),4,(255,0,0),-2)
-                    cv2.circle(image,(bbox_[2],bbox_[1]),4,(255,0,0),-2)
-                    cv2.line(image,(bbox_[0],bbox_[1]),(bbox_[2],bbox_[1]),(30,30,255),2)
-                    cv2.line(image,(bbox_[0],bbox_[1]),(bbox_[0],bbox_[3]),(30,30,255),2)
-                    cv2.line(image,(bbox_[2],bbox_[3]),(bbox_[2],bbox_[1]),(30,30,255),2)
-                    cv2.line(image,(bbox_[2],bbox_[3]),(bbox_[0],bbox_[3]),(30,30,255),2)
                 image_show = np.array(image)[:,:, : :-1]
                 ax = fig.add_subplot(nrow, ncol, row * ncol + col + 1)
                 ax.imshow(image_show)

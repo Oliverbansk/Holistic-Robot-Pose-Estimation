@@ -116,7 +116,7 @@ def get_dataloaders(args):
             batch_size=args.batch_size,
             num_workers=args.n_dataloader_workers
         )
-        test_loader_dict["photo"] = ds_iter_test_dr
+        test_loader_dict["photo"] = ds_iter_test_photo
         
     if urdf_robot_name == "panda":
         ds_shorts = ["azure", "kinect", "realsense", "orb"]

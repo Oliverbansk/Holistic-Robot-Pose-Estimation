@@ -181,6 +181,18 @@ def test_network(args):
         error2d_reproj = cast(error2d_reproj * valid_mask_crop, device)
         mean_kp2d_distance = torch.sum(error2d_reproj) / torch.sum(valid_mask_crop != 0)
         
+        if use_view:
+            assert file_name
+            assert errors
+            vis_path = os.path.join(result_path, "vis")
+            os.makedirs(vis_path, exist_ok=True)           
+            vis_joints_3d(images_original.detach().cpu().numpy(),
+                        pred_keypoints3d_fk.detach().cpu().numpy(), gt_keypoints3d.detach().cpu().numpy(),
+                        gt_2d = gt_keypoints2d.detach().cpu().numpy(), K_original=K_original.detach().cpu().numpy(),
+                        bbox = bboxes.detach().cpu().numpy(),
+                        file_name = file_name, errors = errors, vis_dir = vis_path)
+            print('saved')
+        
         return scene_id, image_dis3d_avg, image_dis2d_avg, batch_dis3d_avg, batch_dis2d_avg, \
             batch_l1jointerror_avg, image_l1jointerror_avg, images_id, root_depth_error, gt_root_depth, batch_error_relative, error3d_relative, times, mean_rotang, mean_kp2d_distance
 
@@ -263,7 +275,51 @@ def test_network(args):
 
         return alldis
                
-    alldis = test()      
+    alldis = test() 
+    
+    if args.visualization:
+        assert len(alldis["id"]) == len(alldis["dis3d"])
+        result = [(alldis["dis3d"][i], alldis["id"][i]) for i in range(len(alldis["id"]))]
+        result_ordered = sorted(result)
+        errors = [item[0] for item in result_ordered]
+        view_ids = [item[1] for item in result_ordered]
+        errors_list = [errors[i] for i in np.arange(0,len(errors),10)]
+        errors_list.append(errors[-1])
+        view_ids_list = [view_ids[i] for i in np.arange(0,len(errors),10)]
+        view_ids_list.append(view_ids[-1])
+        errors = errors_list
+        view_ids = view_ids_list
+
+        view_sampler = ListSampler(view_ids)
+        ds_iter_test_view = DataLoader(
+            ds_test, batch_size=args.view_batch_size, sampler=view_sampler, num_workers=min(int(os.environ.get('N_CPUS', 10)) - 2, 8)
+        )
+
+        # low error, good performance
+        for batchid, sample in enumerate(tqdm(ds_iter_test_view, dynamic_ncols=True)):
+            error_values = errors[(batchid * args.view_batch_size):((batchid+1) * args.view_batch_size)]
+            print(f"3d errors (m): {error_values}")
+            file_name = f"Best predictions {batchid+1}"
+            scene_id, image_dis3d_avg, image_dis2d_avg, batch_dis3d_avg, batch_dis2d_avg, \
+            batch_l1jointerror_avg, image_l1jointerror_avg, images_id, depth_error, gt_root_depth, batch_error_relative, error3d_relative, times, mean_rotang, mean_kp2d_distance = \
+            farward_loss(test_args=args,input_batch=sample, device=device, model=model, use_view=True, file_name=file_name, errors=error_values, train=False)
+            if batchid == 4:
+                break
+        
+        # high error, bad performance
+        view_sampler_r = ListSampler(view_ids[::-1])
+        ds_iter_test_view_r = DataLoader(
+            ds_test, batch_size=args.view_batch_size, sampler=view_sampler_r, num_workers=min(int(os.environ.get('N_CPUS', 10)) - 2, 8)
+        )
+        for batchid, sample in enumerate(tqdm(ds_iter_test_view_r, dynamic_ncols=True)):
+            error_values = errors[::-1][(batchid * args.view_batch_size):((batchid+1) * args.view_batch_size)]
+            print(f"3d errors (m): {error_values}")
+            file_name = f"Worst predictions {batchid+1}"
+            scene_id , image_dis3d_avg, image_dis2d_avg, batch_dis3d_avg, batch_dis2d_avg, \
+            batch_l1jointerror_avg, image_l1jointerror_avg, images_id, depth_error, gt_root_depth, batch_error_relative, error3d_relative, times, mean_rotang, mean_kp2d_distance = \
+            farward_loss(test_args=args,input_batch=sample, device=device, model=model, use_view=True, file_name=file_name, errors=error_values, train=False)
+            if batchid == 4:
+                break     
         
 
 def make_cfg(args):
@@ -285,7 +341,7 @@ def make_cfg(args):
     
     # Test settings
     cfg.logging = True
-    cfg.visualization = False
+    cfg.visualization = args.vis_skeleton
     cfg.view_batch_size = 4
     cfg.view_batches = 15
 
@@ -347,6 +403,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', '-d', type=str, required=True, help= "e.g. panda_synth_test_dr") 
     parser.add_argument('--known_joint', '-k', type=bool, default=False, help= "whether use gt joint for testing")
     parser.add_argument('--model_name', '-m', type=str, default="curr_best_auc(add)_model", help= "model name") 
+    parser.add_argument('--vis_skeleton', action="store_true", help= "visualization of pose skeleton") 
     args = parser.parse_args()
     cfg = make_cfg(args)
     test_network(cfg)
